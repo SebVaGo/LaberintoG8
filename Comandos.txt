@@ -16,3 +16,6 @@ git push origin (tu rama)
 git checkout main
 
 git merge (tu rama)
+
+-- Desde la rama sebas
+
