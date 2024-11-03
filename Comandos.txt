@@ -1,0 +1,18 @@
+git fetch origin main 
+git pull origin main 
+
+
+-- Jalar la main a tu rama local 
+git checkout (tu rama)
+(Desde tu rama)
+git merge main 
+
+-- Subir tu local a tu rama en github
+git add .
+git commit -m "Mensaje de avance"
+git push origin (tu rama)
+
+-- Hacer el merge a la rama main en la nube
+git checkout main
+
+git merge (tu rama)
