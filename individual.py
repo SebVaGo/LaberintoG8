@@ -39,6 +39,21 @@ class Individual:
     def get_last_position(self):
         return self.path[-1] if self.path else None
 
+    #Calculo del fitness con movimientos cardinales y penalización por bucle
+    def calculate_fitness(self, maze):
+        distance_to_goal = abs(self.path[-1][0] - maze.goal[0]) + abs(self.path[-1][1] - maze.goal[1])
+        self.fitness = -distance_to_goal * 20
+
+        unique_positions = len(self.visited_positions)
+        loop_penalty = (len(self.path) - unique_positions) * 30
+        self.fitness -= loop_penalty + (self.stagnant_steps * 30)
+        
+        venom_penalty = sum(maze.get_venom(pos) for pos in self.path)
+        self.fitness -= venom_penalty
+
+        if distance_to_goal == 0:
+            self.fitness += 2000
+
     #verifica si el movimiento entre dos posiciones es cardinal
     def _is_cardinal_move(self, current_pos, new_pos):
         if current_pos is None:
