@@ -17,3 +17,7 @@ class Maze:
     def add_venom(self, position, amount=1):
         x, y = position
         self.venom_map[x][y] += amount 
+
+    def get_venom(self, position):
+        x, y = position
+        return self.venom_map[x][y]
