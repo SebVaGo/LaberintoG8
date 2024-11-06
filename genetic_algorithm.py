@@ -2,11 +2,13 @@ import random
 from individual import Individual
 
 class GeneticAlgorithm:
-    def __init__(self, maze, population_size=50, elitism=True, max_path_length=50):
+    def __init__(self, maze, population_size=50,  mutation_rate=0.1,elitism=True,stagnation_limit=10, max_path_length=50):
         self.maze = maze
         self.population_size = population_size
+        self.mutation_rate = mutation_rate
         self.max_path_length = max_path_length
         self.elitism = elitism
+        self.stagnation_limit = stagnation_limit
         self.population = self._initialize_population()
     
     def _mutate(self, individual):
@@ -29,6 +31,13 @@ class GeneticAlgorithm:
             random.shuffle(all_moves)
             valid_moves = [move for move in all_moves if move not in visited_positions and self.maze.is_valid_move(move)]
             new_step = valid_moves[0] if valid_moves else None
+
+            if new_step:
+                individual.add_step(new_step, self.maze)
+                individual.calculate_fitness(self.maze)
+            else:
+                # Retroceso en caso de callejón sin salida
+                individual.backtrack()
         else:
             # Retroceso automático si hay estancamiento
             individual.backtrack()
