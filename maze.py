@@ -13,3 +13,7 @@ class Maze:
         if 0 <= x < len(self.grid) and 0 <= y < len(self.grid[0]):
             return self.grid[x][y] == 0
         return False
+
+    def add_venom(self, position, amount=1):
+        x, y = position
+        self.venom_map[x][y] += amount 
