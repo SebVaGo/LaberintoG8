@@ -2,14 +2,17 @@ import random
 from individual import Individual
 
 class GeneticAlgorithm:
-    def __init__(self, maze, population_size=50,  mutation_rate=0.1,elitism=True,stagnation_limit=10, max_path_length=50):
+    def __init__(self, maze, population_size=50,  mutation_rate=0.1, crossover_rate=0.7, elitism=True,stagnation_limit=10, max_path_length=50):
         self.maze = maze
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.crossover_rate = crossover_rate
         self.max_path_length = max_path_length
         self.elitism = elitism
         self.stagnation_limit = stagnation_limit
         self.population = self._initialize_population()
+        self.best_fitness = None
+        self.stagnation_count = 0
     
     def _mutate(self, individual):
         """Aplica mutación en un individuo, asegurando que solo realice movimientos en direcciones cardinales y válidos."""
@@ -81,3 +84,20 @@ class GeneticAlgorithm:
 
         valid_moves = [move for move in moves if move not in visited_positions and self.maze.is_valid_move(move)]
         return valid_moves[0] if valid_moves else None
+    
+    def _crossover(self, parent1, parent2):
+        """Realiza cruce de dos puntos para mejorar la diversidad genética."""
+        split1 = len(parent1.path) // 3
+        split2 = 2 * len(parent1.path) // 3
+        child_path = parent1.path[:split1] + parent2.path[split1:split2] + parent1.path[split2:]
+
+        # Evita que el hijo visite posiciones ya vistas y prioriza el objetivo
+        visited_positions = set(child_path)
+        for step in parent2.path[split2:]:
+            if step not in visited_positions and self.maze.is_valid_move(step):
+                child_path.append(step)
+                visited_positions.add(step)
+        
+        child = Individual(self.maze, child_path)
+        child.calculate_fitness(self.maze)
+        return child
