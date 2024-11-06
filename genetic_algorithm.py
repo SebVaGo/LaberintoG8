@@ -15,7 +15,6 @@ class GeneticAlgorithm:
         self.stagnation_count = 0
     
     def _mutate(self, individual):
-        """Aplica mutación en un individuo, asegurando que solo realice movimientos en direcciones cardinales y válidos."""
         last_position = individual.get_last_position()
         venom_level = self.maze.get_venom(last_position)
 
@@ -86,7 +85,6 @@ class GeneticAlgorithm:
         return valid_moves[0] if valid_moves else None
     
     def _crossover(self, parent1, parent2):
-        """Realiza cruce de dos puntos para mejorar la diversidad genética."""
         split1 = len(parent1.path) // 3
         split2 = 2 * len(parent1.path) // 3
         child_path = parent1.path[:split1] + parent2.path[split1:split2] + parent1.path[split2:]
@@ -101,3 +99,37 @@ class GeneticAlgorithm:
         child = Individual(self.maze, child_path)
         child.calculate_fitness(self.maze)
         return child
+
+    def run(self, generations=1):
+        for generation in range(generations):
+            # Elitismo: conservar el mejor individuo
+            if self.elitism:
+                best_individual = max(self.population, key=lambda ind: ind.fitness)
+                selected = self._selection() + [best_individual]
+            else:
+                selected = self._selection()
+
+            children = []
+            goal_reached = False
+
+            while len(children) < self.population_size:
+                parent1, parent2 = random.sample(selected, 2)
+                if random.random() < self.crossover_rate:
+                    child = self._crossover(parent1, parent2)
+                else:
+                    child = parent1
+
+                self._mutate(child)
+                children.append(child)
+
+                if child.goal_reached:
+                    goal_reached = True
+                    break
+
+            if goal_reached:
+                break
+            else:
+                self.population = children
+
+        best_individual = max(self.population, key=lambda ind: ind.fitness)
+        return best_individual
