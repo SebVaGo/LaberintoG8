@@ -8,6 +8,13 @@ class GeneticAlgorithm:
         self.max_path_length = max_path_length
         self.elitism = elitism
         self.population = self._initialize_population()
+    
+    def _mutate(self, individual):
+        """Aplica mutación en un individuo, asegurando que solo realice movimientos en direcciones cardinales y válidos."""
+        last_position = individual.get_last_position()
+        venom_level = self.maze.get_venom(last_position)
+
+        exploration_probability = 0.7 if venom_level > 2 else 0.3
 
     def _initialize_population(self):
         """Inicializa la población de individuos en el laberinto."""
