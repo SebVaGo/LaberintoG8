@@ -27,3 +27,12 @@ class Individual:
                self.stagnant_steps = 0
                
          maze.add_venom(step, amount=3)  
+         
+   #retroceder en caso se estanque    
+   def backtrack(self):
+      if len(self.path) > 1:
+         last_step = self.path.pop()
+         self.visited_positions.discard(last_step)
+         self.stagnant_steps += 2  # Penaliza el retroceso
+      return self.path[-1] if self.path else None
+   
