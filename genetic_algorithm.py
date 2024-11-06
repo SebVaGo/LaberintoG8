@@ -14,7 +14,24 @@ class GeneticAlgorithm:
         last_position = individual.get_last_position()
         venom_level = self.maze.get_venom(last_position)
 
+        # Incrementa la probabilidad de exploración si el veneno es alto
         exploration_probability = 0.7 if venom_level > 2 else 0.3
+        if random.random() < exploration_probability or individual.venom_count > 3:
+            visited_positions = set(individual.path)
+
+            # Exploración aleatoria solo en direcciones cardinales y válidas
+            all_moves = [
+                (last_position[0] + 1, last_position[1]),  # Abajo
+                (last_position[0] - 1, last_position[1]),  # Arriba
+                (last_position[0], last_position[1] + 1),  # Derecha
+                (last_position[0], last_position[1] - 1)   # Izquierda
+            ]
+            random.shuffle(all_moves)
+            valid_moves = [move for move in all_moves if move not in visited_positions and self.maze.is_valid_move(move)]
+            new_step = valid_moves[0] if valid_moves else None
+        else:
+            # Retroceso automático si hay estancamiento
+            individual.backtrack()
 
     def _initialize_population(self):
         """Inicializa la población de individuos en el laberinto."""
